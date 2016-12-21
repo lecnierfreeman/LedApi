@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi"
+        crossorigin="anonymous">
+</head>
+
+<body>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header text-xs-center">
+                Case information
+            </div>
+            <div class="card-block">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action">
+                        <button id="pingApi" type="button" class="btn btn-primary">Ping Api</button>
+                        <button id="clear" type="button" class="btn btn-primary float-xs-right">Clear</button>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading">Add segments</h5>
+                        <input type="text" id="segments" placeholder="100" />
+                        <button id="addSegments" type="button" class="btn btn-primary float-xs-right">Add</button>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading">Set segment color</h5>
+                        <input type="text" id="segmentId" placeholder="0" />
+                        <input type="color" id="segmentColor" placeholder="55" />
+                        <button id="setSegmentColor" type="button" class="btn btn-primary float-xs-right">Set Color</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <p id="result"></p>
+                <button id="clearResult" type="button" class="btn btn-primary float-xs-right">Clear Results</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery first, then Tether, then Bootstrap JS. -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8"
+    crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK"
+    crossorigin="anonymous"></script>
+<script>
+        $(document).ready(function () {
+            let result = $("#result");
+            $("#pingApi").click(function () {
+                result.text("ping Api");
+                $.get("http://192.168.182.113:8080", function (data) {
+                    result.text(JSON.stringify(data));
+                });
+            });
+            $("#clear").click(function () {
+                result.text("clear");
+                $.get("http://192.168.182.113:8080/clear", function (data) {
+                    result.text(JSON.stringify(data));
+                });
+            });
+            $("#addSegments").click(function () {
+                let segments = $("#segments").val();
+                result.text("addSegments:" + segments);
+                $.get("http://192.168.182.113:8080/addSegment?params=" + segments, function (data) {
+                    $("#result").text(JSON.stringify(data));
+                });
+            });
+
+            function hexToRgb(hex) {
+                // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+                var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+                hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+                    return r + r + g + g + b + b;
+                });
+
+                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            $("#setSegmentColor").click(function () {
+                let segmentId = $("#segmentId").val();
+                let segmentColor = $("#segmentColor").val();
+                let rgbColor = hexToRgb(segmentColor);
+                let decColor = (rgbColor.r * 256 + rgbColor.g * 1) * 256 + rgbColor.b * 1;
+                let url = "http://192.168.182.113:8080/setSegmentColor?params=" + segmentId + "_" + decColor;
+                console.log(url);
+
+                result.text("setSegmentColor:" + url);
+                $.get(url, function (data) {
+                    $("#result").text(JSON.stringify(data));
+                });
+            });
+            $("#clearResult").click(function () {
+                result.text("");
+            });
+        });
+    </script>
+</body>
+
+</html>
