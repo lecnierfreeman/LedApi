@@ -58,20 +58,20 @@
             let result = $("#result");
             $("#pingApi").click(function () {
                 result.text("ping Api");
-                $.get("http://192.168.182.113:8080", function (data) {
+                $.get("http://192.168.182.4:8080", function (data) {
                     result.text(JSON.stringify(data));
                 });
             });
             $("#clear").click(function () {
                 result.text("clear");
-                $.get("http://192.168.182.113:8080/clear", function (data) {
+                $.get("http://192.168.182.4:8080/clear", function (data) {
                     result.text(JSON.stringify(data));
                 });
             });
             $("#addSegments").click(function () {
                 let segments = $("#segments").val();
                 result.text("addSegments:" + segments);
-                $.get("http://192.168.182.113:8080/addSegment?params=" + segments, function (data) {
+                $.get("http://192.168.182.4:8080/addSegment?params=" + segments, function (data) {
                     $("#result").text(JSON.stringify(data));
                 });
             });
@@ -96,7 +96,7 @@
                 let segmentColor = $("#segmentColor").val();
                 let rgbColor = hexToRgb(segmentColor);
                 let decColor = (rgbColor.r * 256 + rgbColor.g * 1) * 256 + rgbColor.b * 1;
-                let url = "http://192.168.182.113:8080/setSegmentColor?params=" + segmentId + "_" + decColor;
+                let url = "http://192.168.182.4:8080/setSegmentColor?params=" + segmentId + "_" + decColor;
                 console.log(url);
 
                 result.text("setSegmentColor:" + url);
